@@ -58,6 +58,56 @@ render_with_dynamic_liquid('foo' => @foo)
 
 This will make 'foo' available from the Liquid Template. Read the library source code for more details, but it's enough to understand that this render method will follow Rails' convention over configuration principals so, for instance, if you're inside the _index_ action of a _PostsController_, you're expected to have a collection named '@posts' and named routes such as _posts_path_ and so on, and so forth.
 
+If you're inside a nested controller (such as 'Comment belongs_to Post'), declare a method named 'parent', for example:
+
+<pre><code>
+class CommentsController < ApplicationController
+  ...
+  def parent
+    @post ||= Post.find(params[:post_id])
+  end
+end
+</code></pre>
+
+The plugin will use this method to refer to the proper named routes, such as _post_comments_path(parent)_ or _post_comment_path(parent, @comment)_ and so on. Namespaces will work too, for example:
+
+<pre><code>
+class Admin::PostsController < ApplicationController
+  def index
+     @posts = Post.all
+     respond_to do |format|
+       format.html { render_with_dynamic_liquid(:namespace => 'admin') } 
+     end
+	end
+end
+</code></pre>
+
+There's probably a better syntax for that, but it works like that too. The other thing is that your models need to be 'liquified' in order to be usable from inside a Liquid template. You have to declare a _to_liquid_ method explicitly saying which columns you want exposed:
+
+<pre><code>
+class Post < ActiveRecord::Base
+  ...
+  def to_liquid
+    { 'title' => self.title, 'body' => self.body }
+  end
+end
+</code></pre>
+
+Notice that the hash keys have to be strings, and not symbols. The other thing is that the plugin will append other attributes to this hash automagically, so you can do the following from within your Liquid templates:
+
+<pre><code>{{ 'Show' | link_to: post.show_path }}</code></pre>
+
+It adds 'show_path' and 'edit_path' to your model instances, so you can use them to create links or form actions. There are other globally assigned variables as well, such as:
+
+* collection - refers to the controller collection (for index action) such as @posts
+* object - referes to the controller single object (for non-index actions) such as @post
+* collection_path - the named route for the index action, including nested and namespaced versions
+* object_path - the named route for the non-index action, including nested and namespaced versions
+* parent - if you have the 'parent' method in your controller, it's exposed within Liquid
+* parent_path - if you have the 'parent' method in your controller, it's used for named routes
+
+And, of course, your models are properly assigned to Liquid too so, for example, '@posts' is exposed as 'posts' to Liquid.
+
 h2. To do
 
 * Use the Liquid performance tip from: http://cjohansen.no/en/rails/liquid_email_templates_in_rails
