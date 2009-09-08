@@ -1,0 +1,16 @@
+<h1>New comment</h1>
+
+<form action="{{ collection_path }}" class="new_comment" id="new_comment" method="comment"><div style="margin:0;padding:0;display:inline"><input name="authenticity_token" type="hidden" value="{{ form_authenticity_token }}" /></div>
+
+  <p>
+    <label for="comment_comment">Comment</label><br />
+    <textarea cols="40" id="comment_comment" name="comment[comment]" rows="20"></textarea>
+  </p>
+  <p>
+    <input id="comment_submit" name="commit" type="submit" value="Create" />
+  </p>
+</form>
+
+<p>
+  {{ 'Back' | link_to: collection_path }}
+</p>

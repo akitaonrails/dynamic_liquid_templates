@@ -1,0 +1,17 @@
+<h1>Editing comment</h1>
+
+<form action="{{ object_path }}" class="edit_comment" id="edit_comment_1" method="comment"><div style="margin:0;padding:0;display:inline"><input name="_method" type="hidden" value="put" /><input name="authenticity_token" type="hidden" value="{{ form_authenticity_token }}" /></div>
+
+  <p>
+    <label for="comment_body">Comment</label><br />
+    <textarea cols="40" id="comment_comment" name="comment[comment]" rows="20">{{ comment.comment }}</textarea>
+  </p>
+  <p>
+    <input id="comment_submit" name="commit" type="submit" value="Update" />
+  </p>
+</form>
+
+<p>
+  {{ 'Show' | link_to: comment.show_path }} |
+  {{ 'Back' | link_to: collection_path }}
+</p>

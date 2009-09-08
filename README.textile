@@ -1,0 +1,70 @@
+h1. Dynamic Liquid Templates
+
+h2. Use Case
+
+The Rails View system is very complex and complete, 90% of the time you don't need much else but the occasional Haml support.
+
+But if you want to have your users have the feature of editing their own set of view templates, then the default filesystem-based view system will not be enough. That's why I wanted to have a way to retrieve templates from the database instead.
+
+By having your templates being user-editable, it's also not acceptable to use ERB or Haml,because they are too powerful and they expose just too much in the views. You want an engine that exposes just enough so the users can create their own templates without having the risk of they running something nasty such as _system('rm -Rf /')_
+
+That's why I chose Tobias Lütke's excellent "Liquid":http://github.com/tobi/liquid engine that he created for "Shopify.com":http://shopify.com for exactly the same reason. I have no idea how he manages the user templates but in my case I created this plugin to fulfill this requirement.
+
+h2. Usage
+
+Just install it as a plugin into your Rails project and create the needed migration:
+
+<pre><code>
+./script/plugin install git://github.com/akitaonrails/dynamic_liquid_templates.git
+./script/generate dynamic_templates
+rake db:migrate
+</code></pre>
+
+The requirement is to install Tobias' Liquid gem:
+
+<pre><code>
+gem install tobi-liquid --source=http://gems.github.com
+</code></pre>
+
+You also have to require this gem from your _config/environment.rb_ file:
+
+<pre><code>
+config.gem "tobi-liquid", :lib => "liquid", :source => "http://gems.github.com"
+</code></pre>
+
+Now, from within the controller that you want to be user-accessible, edit the 'format.html' block with the new render method:
+
+<pre><code>
+...
+respond_to do |format|
+  format.html { render_with_dynamic_liquid }
+end
+...
+</code></pre>
+
+If you created the default migration file, you now have a _dynamic_templates_ table to hold your Liquid templates. Don't forget to register new entries to the _dynamic_templates_ table. See the spec/fixtures folder for examples on how to write simple Liquid templates. You will register entries such as:
+
+<pre><code>
+DynamicTemplate.create(:path => "posts/show", :body => "<h2>{{ post.title }}</h2>\n<p>{{ post.body }}</p>")
+</code></pre>
+
+Every normal controller instance variables such as _@post_ or _@comments_ will be available as 'post' or 'comments' from inside the Liquid template. Your usual Rails helpers are also available as Liquid filters. In ERB and HAML you usually have access to everything, but Liquid restricts your access (that's the whole idea) and you have to explicitly assign extra objects to the render method, for instance:
+
+<pre><code>
+...
+@foo = Foo.find_by_name("Bar")
+render_with_dynamic_liquid('foo' => @foo)
+</code></pre>
+
+This will make 'foo' available from the Liquid Template. Read the library source code for more details, but it's enough to understand that this render method will follow Rails' convention over configuration principals so, for instance, if you're inside the _index_ action of a _PostsController_, you're expected to have a collection named '@posts' and named routes such as _posts_path_ and so on, and so forth.
+
+h2. To do
+
+* Use the Liquid performance tip from: http://cjohansen.no/en/rails/liquid_email_templates_in_rails
+* Create a cache wrapper for the Liquid renderer
+* Add support for more than one level of nested resources
+* Add tests for multi-site support, using ActiveRecord's 'default_scope' feature
+
+h2. Credits
+
+Fabio Akita (fabioakita@gmail.com) - http://www.akitaonrails.com

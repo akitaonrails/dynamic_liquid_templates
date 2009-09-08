@@ -1,0 +1,8 @@
+<h2>{{ post.title }}</h2>
+
+{{ post.body }}
+
+<p>
+  {{ 'Edit' | link_to: post.edit_path }} |
+  {{ 'Back' | link_to: collection_path }}
+</p>

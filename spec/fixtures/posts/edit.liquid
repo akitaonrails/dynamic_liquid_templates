@@ -1,0 +1,21 @@
+<h1>Editing post</h1>
+
+<form action="{{ object_path }}" class="edit_post" id="edit_post_1" method="post"><div style="margin:0;padding:0;display:inline"><input name="_method" type="hidden" value="put" /><input name="authenticity_token" type="hidden" value="{{ form_authenticity_token }}" /></div>
+
+  <p>
+    <label for="post_title">Title</label><br />
+    <input id="post_title" name="post[title]" size="30" type="text" value="{{ post.title }}" />
+  </p>
+  <p>
+    <label for="post_body">Body</label><br />
+    <textarea cols="40" id="post_body" name="post[body]" rows="20">{{ post.body }}</textarea>
+  </p>
+  <p>
+    <input id="post_submit" name="commit" type="submit" value="Update" />
+  </p>
+</form>
+
+<p>
+  {{ 'Show' | link_to: post.show_path }} |
+  {{ 'Back' | link_to: collection_path }}
+</p>

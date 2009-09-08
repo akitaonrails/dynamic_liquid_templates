@@ -1,0 +1,21 @@
+<h1>Listing posts</h1>
+
+<table>
+  <tr>
+    <th>Title</th>
+    <th>Body</th>
+  </tr>
+
+{% for post in collection %}
+  <tr>
+    <td>{{ post.title }}</td>
+    <td>{{ post.body }}</td>
+    <td>{{ 'Show' | link_to: post.show_path }}</td>
+    <td>{{ 'Edit' | link_to: post.edit_path }}</td>
+  </tr>
+{% endfor %}
+</table>
+
+<br />
+
+<p>{{ 'New Post' | link_to: new_object_path }}</p>
