@@ -1,6 +1,25 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
 describe DynamicLiquidTemplates do
+  describe "simple page resource with default layout" do
+    it "should return the composed index action template" do
+      @controller = KontrollerMock.new("pages", "index")
+      @controller.set(:pages, pages_collection)
+      output = @controller.render_with_dynamic_liquid
+      
+      output.should include('<link href="/stylesheets/scaffold.css" media="screen" rel="stylesheet" type="text/css" />')
+      output.should include('<td>Foo</td>')
+      output.should include('<td>Lorem Ipsum 1</td>')
+      output.should include('<td><a href="/page/1">Show</a></td>')
+      output.should include('<td><a href="/page/1/edit">Edit</a></td>')
+      output.should include('<td>Bar</td>')
+      output.should include('<td>Lorem Ipsum 2</td>')
+      output.should include('<td><a href="/page/2">Show</a></td>')
+      output.should include('<td><a href="/page/2/edit">Edit</a></td>')
+      output.should include('<a href="/page/new">New Page</a><')
+    end
+  end
+  
   describe "simple post resource" do
     it "should return the composed index action template" do
       @controller = KontrollerMock.new("posts", "index")
@@ -24,6 +43,7 @@ describe DynamicLiquidTemplates do
       @controller.set(:post, post_object)
       output = @controller.render_with_dynamic_liquid
       
+      # output.should include('teste')
       output.should include('<h2>Foo</h2>')
       output.should include('Lorem Ipsum 1')
       output.should include('<a href="/post/1/edit">Edit</a> |')

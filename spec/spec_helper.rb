@@ -20,6 +20,13 @@ def posts_collection
   ]
 end
 
+def pages_collection
+  [
+    Page.new(:id => 1, :title => "Foo", :body => "Lorem Ipsum 1"),
+    Page.new(:id => 2, :title => "Bar", :body => "Lorem Ipsum 2")
+  ]
+end
+
 def post_object
   Post.new(:id => 1, :title => "Foo", :body => "Lorem Ipsum 1")
 end

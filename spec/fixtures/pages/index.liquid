@@ -1,0 +1,21 @@
+<h1>Listing pages</h1>
+
+<table>
+  <tr>
+    <th>Title</th>
+    <th>Body</th>
+  </tr>
+
+{% for page in collection %}
+  <tr>
+    <td>{{ page.title }}</td>
+    <td>{{ page.body }}</td>
+    <td>{{ 'Show' | link_to: page.show_path }}</td>
+    <td>{{ 'Edit' | link_to: page.edit_path }}</td>
+  </tr>
+{% endfor %}
+</table>
+
+<br />
+
+<p>{{ 'New Page' | link_to: new_object_path }}</p>

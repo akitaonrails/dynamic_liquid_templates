@@ -131,16 +131,20 @@ module DynamicLiquidTemplates
     
     _namespace_dir = assigns.include?(:namespace) ? "#{assigns.delete(:namespace)}/" : nil
     _layout_path   = assigns.delete(:layout) || "layouts/#{_namespace_dir}#{_controller_name}"
+    _default_layout_path = "layouts/application"
     _template_path = "#{_namespace_dir}#{_controller_name}/#{assigns.delete(:action) || self.action_name}"
-    _layout   = Liquid::Template.parse(_dynamic_template_klass.find_by_path(_layout_path).body) 
+    
+    _dynamic_layout = _dynamic_template_klass.find_by_path(_layout_path) || _dynamic_template_klass.find_by_path(_default_layout_path)
+    _layout   = Liquid::Template.parse(_dynamic_layout.body) 
     _template = Liquid::Template.parse(_dynamic_template_klass.find_by_path(_template_path).body)
 
     options = { :filters => [master_helper_module], :registers => {
       :action_view => ActionView::Base.new([], {}, self), 
       :controller  => self
     } }
-    _rend_temp   = _template.render(assigns, options)
-    _rend_layout = _layout.render({'content_for_layout' => _rend_temp}, options)
+
+    _rend_temp      = _template.render(assigns, options)
+    _rend_layout    = _layout.render({'content_for_layout' => _rend_temp}, options)
 
     headers["Content-Type"] ||= 'text/html; charset=utf-8'
     render :text => _rend_layout

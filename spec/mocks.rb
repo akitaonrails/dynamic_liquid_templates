@@ -6,9 +6,13 @@ class DynamicTemplate
     model = DynamicTemplate.new
     # replace the admin subdir just so we don't need to duplicate the posts template
     path.gsub!('admin/', '') if path =~ /admin/
-    model.path = path
-    model.body = File.read(File.dirname(__FILE__) + "/fixtures/#{path}.liquid")
-    model
+    model.path = "#{File.dirname(__FILE__)}/fixtures/#{path}.liquid"
+    if File.exist? model.path
+      model.body = File.read(model.path)
+      model
+    else
+      nil
+    end
   end
 end
 
@@ -45,6 +49,22 @@ class KontrollerMock
   end
   
   # simulating named routes
+  
+  def pages_path
+    "/pages"
+  end
+  
+  def page_path(obj)
+    "/page/#{obj.to_param}"
+  end
+  
+  def new_page_path
+    "/page/new"
+  end
+  
+  def edit_page_path(obj)
+    "/page/#{obj.to_param}/edit"
+  end
   
   def posts_path
     "/posts"
@@ -104,6 +124,28 @@ class Post
     self.body = options[:body]
     self.comments = options[:comments] || []
     self.comments.each { |comment| comment.post = self }
+  end
+  
+  def to_liquid
+    {
+      'id'    => self.id,
+      'title' => self.title,
+      'body'  => self.body
+    }
+  end
+  
+  def to_param
+    self.id
+  end
+end
+
+class Page
+  attr_accessor :id, :title, :body
+  
+  def initialize(options = {})
+    self.id = options[:id]
+    self.title = options[:title]
+    self.body = options[:body]
   end
   
   def to_liquid
