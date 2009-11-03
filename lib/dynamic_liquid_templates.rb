@@ -134,14 +134,15 @@ module DynamicLiquidTemplates
     _default_layout_path = "layouts/application"
     _template_path = "#{_namespace_dir}#{_controller_name}/#{assigns.delete(:action) || self.action_name}"
     
-    _dynamic_layout = _dynamic_template_klass.find_by_path(_layout_path) || _dynamic_template_klass.find_by_path(_default_layout_path)
-    _layout   = Liquid::Template.parse(_dynamic_layout.body) 
-    _template = Liquid::Template.parse(_dynamic_template_klass.find_by_path(_template_path).body)
-
     options = { :filters => [master_helper_module], :registers => {
       :action_view => ActionView::Base.new([], {}, self), 
       :controller  => self
     } }
+    
+    _dynamic_layout = _dynamic_template_klass.find_by_path(_layout_path) || _dynamic_template_klass.find_by_path(_default_layout_path)
+    _filesystem = Liquid::Template.file_system = DynamicLiquidTemplates::DatabaseFileSystem.new(assigns, options)
+    _layout   = Liquid::Template.parse(_dynamic_layout.body) 
+    _template = Liquid::Template.parse(_dynamic_template_klass.find_by_path(_template_path).body)
 
     _rend_temp      = _template.render(assigns, options)
     _rend_layout    = _layout.render({'content_for_layout' => _rend_temp}, options)
