@@ -8,7 +8,7 @@ require 'spec'
 require 'ruby-debug'
 require File.dirname(__FILE__) + '/../lib/dynamic_liquid_templates.rb'
 require File.dirname(__FILE__) + '/../lib/database_file_system.rb'
-require File.dirname(__FILE__) + '/mocks.rb'
+require File.dirname(__FILE__) + '/fakes.rb'
 
 Spec::Runner.configure do |config|
 

@@ -3,7 +3,7 @@ require File.dirname(__FILE__) + '/spec_helper'
 describe DynamicLiquidTemplates do
   describe "simple page resource with default layout" do
     it "should return the composed index action template" do
-      @controller = KontrollerMock.new("pages", "index")
+      @controller = FakeController.new("pages", "index")
       @controller.set(:pages, pages_collection)
       output = @controller.render_with_dynamic_liquid
 
@@ -24,7 +24,7 @@ describe DynamicLiquidTemplates do
 
   describe "simple post resource" do
     it "should return the composed index action template" do
-      @controller = KontrollerMock.new("posts", "index")
+      @controller = FakeController.new("posts", "index")
       @controller.set(:posts, posts_collection)
       output = @controller.render_with_dynamic_liquid
       
@@ -41,7 +41,7 @@ describe DynamicLiquidTemplates do
     end
   
     it "should return the composed show action template" do
-      @controller = KontrollerMock.new("posts", "show")
+      @controller = FakeController.new("posts", "show")
       @controller.set(:post, post_object)
       output = @controller.render_with_dynamic_liquid
       
@@ -53,7 +53,7 @@ describe DynamicLiquidTemplates do
     end
     
     it "should return the composed edit action template" do
-      @controller = KontrollerMock.new("posts", "edit")
+      @controller = FakeController.new("posts", "edit")
       @controller.set(:post, post_object)
       output = @controller.render_with_dynamic_liquid
       
@@ -66,7 +66,7 @@ describe DynamicLiquidTemplates do
     end
     
     it "should return the composed new action template" do
-      @controller = KontrollerMock.new("posts", "new")
+      @controller = FakeController.new("posts", "new")
       @controller.set(:post, post_object)
       output = @controller.render_with_dynamic_liquid
 
@@ -78,7 +78,7 @@ describe DynamicLiquidTemplates do
 
   describe "nested post/comment resource" do
     before(:each) do
-      @controller = KontrollerMock.new("comments", "index")
+      @controller = FakeController.new("comments", "index")
       @controller.class_eval do
         def parent
           post_object
@@ -132,7 +132,7 @@ describe DynamicLiquidTemplates do
 
   describe "namespaced post resource" do
     it "should return composed index action template" do
-      @controller = KontrollerMock.new("posts", "index")
+      @controller = FakeController.new("posts", "index")
       @controller.set(:posts, posts_collection)
       output = @controller.render_with_dynamic_liquid(:namespace => "admin")
       
@@ -148,7 +148,7 @@ describe DynamicLiquidTemplates do
       output.should include('<a href="/admin/post/new">New Post</a><')
     end
     it "should return composed show action template" do
-      @controller = KontrollerMock.new("posts", "show")
+      @controller = FakeController.new("posts", "show")
       @controller.set(:post, post_object)
       output = @controller.render_with_dynamic_liquid(:namespace => "admin")
       
@@ -158,7 +158,7 @@ describe DynamicLiquidTemplates do
       output.should include('<a href="/admin/posts">Back</a>')
     end
     it "should return composed edit action template" do
-      @controller = KontrollerMock.new("posts", "edit")
+      @controller = FakeController.new("posts", "edit")
       @controller.set(:post, post_object)
       output = @controller.render_with_dynamic_liquid(:namespace => "admin")
       
@@ -170,7 +170,7 @@ describe DynamicLiquidTemplates do
       output.should include('<a href="/admin/posts">Back</a>')
     end
     it "should return composed new action template" do
-      @controller = KontrollerMock.new("posts", "new")
+      @controller = FakeController.new("posts", "new")
       @controller.set(:post, post_object)
       output = @controller.render_with_dynamic_liquid(:namespace => "admin")
 

@@ -1,7 +1,7 @@
 class DynamicTemplate
   attr_accessor :path, :body
 
-  # mock to return static fixtures instead of hitting the database
+  # fake to return static fixtures instead of hitting the database
   def self.find_by_path(path)
     model = DynamicTemplate.new
     # replace the admin subdir just so we don't need to duplicate the posts template
@@ -16,7 +16,7 @@ class DynamicTemplate
   end
 end
 
-class KontrollerMock
+class FakeController
   include DynamicLiquidTemplates
   attr_accessor :controller_name, :action_name, :form_authenticity_token
   
