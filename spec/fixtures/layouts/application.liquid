@@ -9,9 +9,13 @@
 </head>
 <body>
 
+{% include 'shared/header' %}
+
 <p style="color: green">{{ flash[:notice] }}</p>
 
 {{ content_for_layout }}
+
+{% include 'shared/footer' %}
 
 </body>
 </html>

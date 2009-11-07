@@ -6,7 +6,8 @@ describe DynamicLiquidTemplates do
       @controller = KontrollerMock.new("pages", "index")
       @controller.set(:pages, pages_collection)
       output = @controller.render_with_dynamic_liquid
-      
+
+      output.should include('<div id="header">Page Header</div>')
       output.should include('<link href="/stylesheets/scaffold.css" media="screen" rel="stylesheet" type="text/css" />')
       output.should include('<td>Foo</td>')
       output.should include('<td>Lorem Ipsum 1</td>')
@@ -17,9 +18,10 @@ describe DynamicLiquidTemplates do
       output.should include('<td><a href="/page/2">Show</a></td>')
       output.should include('<td><a href="/page/2/edit">Edit</a></td>')
       output.should include('<a href="/page/new">New Page</a><')
+      output.should include('<div id="footer">Page Footer</div>')
     end
   end
-  
+
   describe "simple post resource" do
     it "should return the composed index action template" do
       @controller = KontrollerMock.new("posts", "index")
