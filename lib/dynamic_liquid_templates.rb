@@ -145,7 +145,7 @@ module DynamicLiquidTemplates
       _dynamic_layout = _dynamic_template_klass.from_scope(_scope).find_by_path(_layout_path) || _dynamic_template_klass.from_scope(_scope).find_by_path(_default_layout_path)
       _layout   = Liquid::Template.parse(_dynamic_layout.body) 
     end
-    _template = Liquid::Template.parse(_dynamic_template_klass.find_by_path(_template_path).body)
+    _template = Liquid::Template.parse(_dynamic_template_klass.from_scope(_scope).find_by_path(_template_path).body)
 
     _rend_temp      = _template.render(assigns, options)
     _rend_layout    = _layout.render({'content_for_layout' => _rend_temp}, options) if _layout_path
