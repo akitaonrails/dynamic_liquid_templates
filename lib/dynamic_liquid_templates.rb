@@ -50,7 +50,7 @@ module DynamicLiquidTemplates
     _collection_variable_name = (assigns.delete(:collection)     || "@#{_controller_name}").to_s # @comments
     _object_variable_name     = (assigns.delete(:object)         || "@#{_model_name}").to_s      # @comment
     _parent_name              = respond_to?(:parent) ? "#{parent.class.name.underscore}_" : nil
-    _namespace                = assigns.include?(:namespace) ? "#{assigns[:namespace].singularize}_" : nil
+    _namespace                = assigns.include?(:namespace) ? "#{assigns[:namespace]}_" : nil
     _scope                    = assigns[:scope]
     
     instance_variables.each do |variable|
@@ -130,7 +130,7 @@ module DynamicLiquidTemplates
     # begin Liquid rendering procedure
     _dynamic_template_klass = assigns.delete(:dynamic_template_class) || DynamicTemplate
     
-    _namespace_dir = assigns.include?(:namespace) ? "#{assigns.delete(:namespace).pluralize}/" : nil
+    _namespace_dir = assigns.include?(:namespace) ? "#{assigns.delete(:namespace)}/" : nil
     _layout_path   = assigns[:layout] == false ? nil : ( assigns.delete(:layout) || "layouts/#{_namespace_dir}#{_controller_name}" )
     _default_layout_path = "layouts/application"
     _template_path = "#{_namespace_dir}#{_controller_name}/#{assigns.delete(:action) || self.action_name}"
