@@ -50,7 +50,8 @@ module DynamicLiquidTemplates
     _collection_variable_name = (assigns.delete(:collection)     || "@#{_controller_name}").to_s # @comments
     _object_variable_name     = (assigns.delete(:object)         || "@#{_model_name}").to_s      # @comment
     _parent_name              = respond_to?(:parent) ? "#{parent.class.name.underscore}_" : nil
-    _namespace                = assigns.include?(:namespace) ? "#{assigns[:namespace]}_" : nil
+    _namespace                = assigns.include?(:namespace) ? "#{assigns[:namespace].singularize}_" : nil
+    _scope                    = assigns[:scope]
     
     instance_variables.each do |variable|
       # discovers variables and path for index action
@@ -119,8 +120,8 @@ module DynamicLiquidTemplates
         _show_path = "#{_namespace}#{_parent_name}#{_object_name}_path(#{_parent_name ? 'parent, ' : nil}_object)"
         _edit_path = "edit_#{_namespace}#{_parent_name}#{_object_name}_path(#{_parent_name ? 'parent, ' : nil}_object)"
 
-        _object._show_path = eval(_show_path)
-        _object._edit_path = eval(_edit_path)
+        _object._show_path = lambda{ eval(_show_path) }
+        _object._edit_path = lambda{ eval(_edit_path) }
       end
     end
 
@@ -129,8 +130,8 @@ module DynamicLiquidTemplates
     # begin Liquid rendering procedure
     _dynamic_template_klass = assigns.delete(:dynamic_template_class) || DynamicTemplate
     
-    _namespace_dir = assigns.include?(:namespace) ? "#{assigns.delete(:namespace)}/" : nil
-    _layout_path   = assigns.delete(:layout) || "layouts/#{_namespace_dir}#{_controller_name}"
+    _namespace_dir = assigns.include?(:namespace) ? "#{assigns.delete(:namespace).pluralize}/" : nil
+    _layout_path   = assigns[:layout] == false ? nil : ( assigns.delete(:layout) || "layouts/#{_namespace_dir}#{_controller_name}" )
     _default_layout_path = "layouts/application"
     _template_path = "#{_namespace_dir}#{_controller_name}/#{assigns.delete(:action) || self.action_name}"
     
@@ -139,15 +140,17 @@ module DynamicLiquidTemplates
       :controller  => self
     } }
     
-    _dynamic_layout = _dynamic_template_klass.find_by_path(_layout_path) || _dynamic_template_klass.find_by_path(_default_layout_path)
     _filesystem = Liquid::Template.file_system = DynamicLiquidTemplates::DatabaseFileSystem.new(_dynamic_template_klass, assigns, options)
-    _layout   = Liquid::Template.parse(_dynamic_layout.body) 
+    if _layout_path
+      _dynamic_layout = _dynamic_template_klass.from_scope(_scope).find_by_path(_layout_path) || _dynamic_template_klass.from_scope(_scope).find_by_path(_default_layout_path)
+      _layout   = Liquid::Template.parse(_dynamic_layout.body) 
+    end
     _template = Liquid::Template.parse(_dynamic_template_klass.find_by_path(_template_path).body)
 
     _rend_temp      = _template.render(assigns, options)
-    _rend_layout    = _layout.render({'content_for_layout' => _rend_temp}, options)
+    _rend_layout    = _layout.render({'content_for_layout' => _rend_temp}, options) if _layout_path
 
     headers["Content-Type"] ||= 'text/html; charset=utf-8'
-    render :text => _rend_layout
+    render :text => _layout_path ? _rend_layout : _rend_temp
   end
 end
